@@ -1,10 +1,13 @@
 use std::ops;
 use std::fmt;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
     e: [f32;3]
 }
+
+pub type Color = Vec3;
+//type Point3 = Vec3;
 
 impl Vec3 {
     pub fn new(e0: f32, e1: f32, e2: f32) -> Vec3 {
@@ -21,6 +24,10 @@ impl Vec3 {
 
     pub fn length_squared(&self) -> f32 {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+    }
+
+    pub fn unit_vec(&self) -> Vec3 {
+        *self / self.length()
     }
 
     pub fn dot(u: &Vec3, v: &Vec3) -> f32 {
