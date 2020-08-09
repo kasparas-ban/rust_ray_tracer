@@ -7,7 +7,7 @@ pub struct Vec3 {
 }
 
 pub type Color = Vec3;
-//type Point3 = Vec3;
+pub type Point3 = Vec3;
 
 impl Vec3 {
     pub fn new(e0: f32, e1: f32, e2: f32) -> Vec3 {
