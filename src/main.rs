@@ -10,6 +10,8 @@ mod hittable;
 
 mod sphere;
 
+mod hittable_list;
+
 fn hit_sphere(center: &Point3, radius: f32, r: &Ray) -> f32 {
     let oc: Vec3 = r.origin() - *center;
     let a: f32 = r.direction().length_squared();
