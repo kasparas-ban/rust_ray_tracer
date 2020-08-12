@@ -26,24 +26,16 @@ impl Ray {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_ray_at() {
-
         let ray: Ray = Ray::new(Vec3::new(1.0, 2.0, 3.0), Vec3::new(1.0, 0.0, 0.0));
 
-        assert_eq!(
-            ray.at(0.0),
-            Vec3::new(1.0, 2.0, 3.0)
-        );
+        assert_eq!(ray.at(0.0), Vec3::new(1.0, 2.0, 3.0));
 
-        assert_eq!(
-            ray.at(1.0),
-            Vec3::new(2.0, 2.0, 3.0)
-        );
+        assert_eq!(ray.at(1.0), Vec3::new(2.0, 2.0, 3.0));
     }
 }
