@@ -5,6 +5,7 @@ mod ray;
 mod sphere;
 mod vec3;
 mod rtweekend;
+mod camera;
 
 use ray::Ray;
 use vec3::{Color, Point3, Vec3};
@@ -12,6 +13,7 @@ use sphere::*;
 use hittable::{HitRecord, Hittable};
 use hittable_list::HittableList;
 use rtweekend::*;
+use camera::Camera;
 
 fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
     let mut rec: HitRecord = HitRecord::default();
@@ -29,6 +31,7 @@ fn main() {
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
     const IMAGE_WIDTH: u32 = 400;
     const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as u32;
+    const SAMPLES_PER_PIXEL: u32 = 100;
 
     // World
 
@@ -38,15 +41,7 @@ fn main() {
 
     // Camera
 
-    const VIEWPORT_HEIGHT: f32 = 2.0;
-    const VIEWPORT_WIDTH: f32 = ASPECT_RATIO * VIEWPORT_HEIGHT;
-    const FOCAL_LENGTH: f32 = 1.0;
-
-    let origin = Point3::new(0.0, 0.0, 0.0);
-    let horizontal: Vec3 = Vec3::new(VIEWPORT_WIDTH, 0.0, 0.0);
-    let vertical: Vec3 = Vec3::new(0.0, VIEWPORT_HEIGHT, 0.0);
-    let lower_left_corner: Vec3 =
-        origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, FOCAL_LENGTH);
+    let cam: Camera = Camera::new();
 
     // Render
 
@@ -54,15 +49,17 @@ fn main() {
 
     for j in (0..(IMAGE_HEIGHT - 1)).rev() {
         eprintln!("\rScanlines remaining: {:} ", j);
-        for i in 0..(IMAGE_WIDTH) {
-            let u: f32 = i as f32 / (IMAGE_WIDTH - 1) as f32;
-            let v: f32 = j as f32 / (IMAGE_HEIGHT - 1) as f32;
-            let r: Ray = Ray::new(
-                origin,
-                lower_left_corner + horizontal * u + vertical * v - origin,
-            );
-            let pixel_color: Color = ray_color(&r, &world);
-            color::write_color(pixel_color);
+        for i in 0..IMAGE_WIDTH {
+
+            let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
+            for s in 0..SAMPLES_PER_PIXEL {
+                let u: f32 = (i as f32 + random()) / (IMAGE_WIDTH - 1) as f32;
+                let v: f32 = (j as f32 + random()) / (IMAGE_HEIGHT - 1) as f32;
+                let r: Ray = cam.get_ray(u, v);
+                pixel_color += ray_color(&r, &world);
+            }
+
+            color::write_color(pixel_color, SAMPLES_PER_PIXEL);
         }
     }
 

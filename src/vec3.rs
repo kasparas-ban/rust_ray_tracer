@@ -65,6 +65,19 @@ impl ops::Add for Vec3 {
     }
 }
 
+impl ops::AddAssign for Vec3 {
+    fn add_assign(&mut self, other: Self) {
+
+        *self = Self {
+            e: [
+                self.e[0] + 1.0,
+                self.e[1] + 1.0,
+                self.e[2] + 1.0,
+            ],
+        }
+    }
+}
+
 impl ops::Sub for Vec3 {
     type Output = Self;
 
