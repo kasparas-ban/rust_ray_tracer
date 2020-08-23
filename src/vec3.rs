@@ -1,5 +1,6 @@
 use std::fmt;
 use std::ops;
+use crate::rtweekend::*;
 
 #[derive(Default, Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
@@ -49,6 +50,46 @@ impl Vec3 {
             ],
         }
     }
+
+    pub fn random() -> Vec3 {
+        Vec3 {
+            e: [random_f32(), random_f32(), random_f32()]
+        }
+    }
+
+    pub fn random_limits(min: f32, max: f32) -> Vec3 {
+        Vec3 {
+            e: [random_limits(min, max), 
+                random_limits(min, max), 
+                random_limits(min, max)]
+        }
+    }
+}
+
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p: Vec3 = Vec3::random_limits(-1.0, 1.0);
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
+}
+
+pub fn random_unit_vector() -> Vec3 {
+    let a: f32 = random_limits(0.0, 2.0*PI);
+    let z: f32 = random_limits(-1.0, 1.0);
+    let r: f32 = (1.0 - z*z).sqrt();
+    Vec3::new(r*a.cos(), r*a.sin(), z)
+}
+
+pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+    let in_unit_sphere: Vec3 = random_in_unit_sphere();
+    if Vec3::dot(&in_unit_sphere, normal) > 0.0 {
+        return in_unit_sphere;
+    } else {
+        return -in_unit_sphere;
+    }
 }
 
 impl ops::Add for Vec3 {
@@ -87,6 +128,16 @@ impl ops::Sub for Vec3 {
                 self.e[1] - rhs.e[1],
                 self.e[2] - rhs.e[2],
             ],
+        }
+    }
+}
+
+impl ops::Mul<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Vec3 {
+            e: [rhs.e[0] * self, rhs.e[1] * self, rhs.e[2] * self],
         }
     }
 }

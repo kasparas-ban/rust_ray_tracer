@@ -11,13 +11,13 @@ pub fn degrees_to_radians(degrees: f32) -> f32 {
     degrees * PI / 180.0
 }
 
-pub fn random() -> f32 {
+pub fn random_f32() -> f32 {
     let mut rng = rand::thread_rng();
     rng.gen()
 }
 
 pub fn random_limits(min: f32, max: f32) -> f32 {
-    min + (max - min) * random()
+    min + (max - min) * random_f32()
 }
 
 pub fn clamp(x: f32, min: f32, max: f32) -> f32 {

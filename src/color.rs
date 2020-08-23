@@ -8,11 +8,11 @@ pub fn write_color(pixel_color: Color, samples_per_pixel: u32) {
     let mut g: f32 = pixel_color.y();
     let mut b: f32 = pixel_color.z();
 
-    // Divide the color by the number of samples
+    // Divide the color by the number of samples and gamma-correct for gamma=2.0
     let scale: f32 = 1.0 / samples_per_pixel as f32;
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = (scale * r).sqrt();
+    g = (scale * g).sqrt();
+    b = (scale * b).sqrt();
 
     println!(
         "{} {} {}\n",

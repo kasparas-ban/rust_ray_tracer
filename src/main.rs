@@ -13,13 +13,21 @@ use hittable_list::HittableList;
 use ray::Ray;
 use rtweekend::*;
 use sphere::*;
-use vec3::{Color, Point3, Vec3};
+use vec3::{Color, Point3, Vec3, random_in_hemisphere};
 
-fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
+fn ray_color(r: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     let mut rec: HitRecord = HitRecord::default();
-    if world.hit(r, 0.0, infinity, &mut rec) {
-        return (rec.normal + Color::new(1.0, 1.0, 1.0)) * 0.5;
+
+    // If we've exceeded the ray bounce limit, no more light is gathered
+    if depth <= 0 {
+        return Color::new(0.0, 0.0, 0.0);
     }
+
+    if world.hit(r, 0.001, INFINITY, &mut rec) {
+        let target: Point3 = rec.p + rec.normal + random_in_hemisphere(&rec.normal);
+        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), world, depth-1);
+    }
+
     let unit_direction: Vec3 = Vec3::unit_vec(&r.direction());
     let t: f32 = 0.5 * (unit_direction.y() + 1.0);
     Color::new(1.0, 1.0, 1.0) * (1.0 - t) + Color::new(0.5, 0.7, 1.0) * t
@@ -32,6 +40,7 @@ fn main() {
     const IMAGE_WIDTH: u32 = 400;
     const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as u32;
     const SAMPLES_PER_PIXEL: u32 = 100;
+    const MAX_DEPTH: u32 = 50;
 
     // World
 
@@ -52,10 +61,10 @@ fn main() {
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
             for s in 0..SAMPLES_PER_PIXEL {
-                let u: f32 = (i as f32 + random()) / (IMAGE_WIDTH - 1) as f32;
-                let v: f32 = (j as f32 + random()) / (IMAGE_HEIGHT - 1) as f32;
+                let u: f32 = (i as f32 + random_f32()) / (IMAGE_WIDTH - 1) as f32;
+                let v: f32 = (j as f32 + random_f32()) / (IMAGE_HEIGHT - 1) as f32;
                 let r: Ray = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world);
+                pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
 
             color::write_color(pixel_color, SAMPLES_PER_PIXEL);
