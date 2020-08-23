@@ -1,10 +1,9 @@
-use crate::vec3::Color;
 use crate::rtweekend::clamp;
+use crate::vec3::Color;
 
 //type Color = Vec3;
 
 pub fn write_color(pixel_color: Color, samples_per_pixel: u32) {
-
     let mut r: f32 = pixel_color.x();
     let mut g: f32 = pixel_color.y();
     let mut b: f32 = pixel_color.z();

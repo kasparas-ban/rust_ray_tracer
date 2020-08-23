@@ -1,19 +1,19 @@
+mod camera;
 mod color;
 mod hittable;
 mod hittable_list;
 mod ray;
+mod rtweekend;
 mod sphere;
 mod vec3;
-mod rtweekend;
-mod camera;
 
-use ray::Ray;
-use vec3::{Color, Point3, Vec3};
-use sphere::*;
+use camera::Camera;
 use hittable::{HitRecord, Hittable};
 use hittable_list::HittableList;
+use ray::Ray;
 use rtweekend::*;
-use camera::Camera;
+use sphere::*;
+use vec3::{Color, Point3, Vec3};
 
 fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
     let mut rec: HitRecord = HitRecord::default();
@@ -22,7 +22,7 @@ fn ray_color(r: &Ray, world: &dyn Hittable) -> Color {
     }
     let unit_direction: Vec3 = Vec3::unit_vec(&r.direction());
     let t: f32 = 0.5 * (unit_direction.y() + 1.0);
-    Color::new(1.0, 1.0, 1.0) * (1.0-t) + Color::new(0.5, 0.7, 1.0) * t
+    Color::new(1.0, 1.0, 1.0) * (1.0 - t) + Color::new(0.5, 0.7, 1.0) * t
 }
 
 fn main() {
@@ -50,7 +50,6 @@ fn main() {
     for j in (0..(IMAGE_HEIGHT - 1)).rev() {
         eprintln!("\rScanlines remaining: {:} ", j);
         for i in 0..IMAGE_WIDTH {
-
             let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
             for s in 0..SAMPLES_PER_PIXEL {
                 let u: f32 = (i as f32 + random()) / (IMAGE_WIDTH - 1) as f32;
