@@ -1,6 +1,6 @@
+use crate::rtweekend::*;
 use std::fmt;
 use std::ops;
-use crate::rtweekend::*;
 
 #[derive(Default, Debug, PartialEq, Copy, Clone)]
 pub struct Vec3 {
@@ -53,15 +53,17 @@ impl Vec3 {
 
     pub fn random() -> Vec3 {
         Vec3 {
-            e: [random_f32(), random_f32(), random_f32()]
+            e: [random_f32(), random_f32(), random_f32()],
         }
     }
 
     pub fn random_limits(min: f32, max: f32) -> Vec3 {
         Vec3 {
-            e: [random_limits(min, max), 
-                random_limits(min, max), 
-                random_limits(min, max)]
+            e: [
+                random_limits(min, max),
+                random_limits(min, max),
+                random_limits(min, max),
+            ],
         }
     }
 }
@@ -77,10 +79,10 @@ pub fn random_in_unit_sphere() -> Vec3 {
 }
 
 pub fn random_unit_vector() -> Vec3 {
-    let a: f32 = random_limits(0.0, 2.0*PI);
+    let a: f32 = random_limits(0.0, 2.0 * PI);
     let z: f32 = random_limits(-1.0, 1.0);
-    let r: f32 = (1.0 - z*z).sqrt();
-    Vec3::new(r*a.cos(), r*a.sin(), z)
+    let r: f32 = (1.0 - z * z).sqrt();
+    Vec3::new(r * a.cos(), r * a.sin(), z)
 }
 
 pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
@@ -91,6 +93,12 @@ pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
         return -in_unit_sphere;
     }
 }
+
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+    *v - 2.0 * (*n) * Vec3::dot(&v, &n)
+}
+
+// ================
 
 impl ops::Add for Vec3 {
     type Output = Self;

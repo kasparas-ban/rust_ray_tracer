@@ -1,3 +1,4 @@
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
 
@@ -5,6 +6,7 @@ use crate::vec3::{Point3, Vec3};
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
+    pub mat_ptr: Box<Material>,
     pub t: f32,
     pub front_face: bool,
 }
