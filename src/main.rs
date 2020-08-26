@@ -26,10 +26,10 @@ fn ray_color(r: &Ray, world: &dyn Hittable, depth: u32) -> Color {
     }
 
     if world.hit(r, 0.001, INFINITY, &mut rec) {
-        let scattered = Ray::default();
-        let attenuation = Color::default();
-        if rec.mat_ptr.scatter(r, &rec, &attenuation, &scattered) {
-            return attenuation * ray_color(&scattered, world, depth - 1);
+        let mut scattered = Ray::default();
+        let mut attenuation = Color::default();
+        if rec.mat_ptr.scatter(r, &rec, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(&scattered, world, depth-1);
         }
         return Color::new(0.0, 0.0, 0.0);
     }
@@ -66,7 +66,7 @@ fn main() {
     });
 
     world.add(Box::new(Sphere::new(
-        Point3::new(0.0, -100.0, -1.0),
+        Point3::new(0.0, -100.5, -1.0),
         100.0,
         material_ground,
     )));

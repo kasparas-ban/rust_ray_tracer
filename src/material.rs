@@ -17,24 +17,22 @@ impl Default for Material {
 }
 
 pub trait Scatter {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord, attenuation: &Color, scattered: &Ray) -> bool {
-        false
-    }
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool;
 }
 
 impl Scatter for Material {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord, attenuation: &Color, scattered: &Ray) -> bool {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool {
         match self {
             Material::Lambertian { albedo } => {
                 let scatter_direction = rec.normal + random_unit_vector();
-                let scattered = Ray::new(rec.p, scatter_direction);
-                let attenuation = albedo;
+                *scattered = Ray::new(rec.p, scatter_direction);
+                *attenuation = albedo.clone();
                 true
             }
             Material::Metal { albedo } => {
                 let reflected = reflect(&Vec3::unit_vec(&r_in.direction()), &rec.normal);
-                let scattered = Ray::new(rec.p, reflected);
-                let attenuation = albedo;
+                *scattered = Ray::new(rec.p, reflected);
+                *attenuation = albedo.clone();
                 Vec3::dot(&scattered.direction(), &rec.normal) > 0.0
             }
         }
