@@ -1,11 +1,13 @@
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::*;
+use crate::rtweekend::random_f32;
 
 #[derive(Copy, Clone)]
 pub enum Material {
     Lambertian { albedo: Color },
     Metal { albedo: Color, fuzz: f32 },
+    Dielectric { ref_idx: f32 },
 }
 
 impl Default for Material {
@@ -35,6 +37,38 @@ impl Scatter for Material {
                 *attenuation = albedo.clone();
                 Vec3::dot(&scattered.direction(), &rec.normal) > 0.0
             }
+            Material::Dielectric { ref_idx } => {
+                *attenuation = Color::new(1.0, 1.0, 1.0);
+                let mut etai_over_etat: f32 = *ref_idx;
+                if rec.front_face { etai_over_etat = 1.0 / ref_idx; }
+
+                let unit_direction = Vec3::unit_vec(&r_in.direction());
+
+                let cos_theta = Vec3::dot(&-unit_direction, &rec.normal).min(1.0);
+                let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
+                if etai_over_etat * sin_theta > 1.0 {
+                    let reflected = reflect(&unit_direction, &rec.normal);
+                    *scattered = Ray::new(rec.p, reflected);
+                    return true;
+                }
+
+                let reflect_prob = schlick(cos_theta, etai_over_etat);
+                if random_f32() < reflect_prob {
+                    let reflected = reflect(&unit_direction, &rec.normal);
+                    *scattered = Ray::new(rec.p, reflected);
+                    return true;
+                }
+
+                let refracted = refract(&unit_direction, &rec.normal, etai_over_etat);
+                *scattered = Ray::new(rec.p, refracted);
+                true
+            }
         }
     }
+}
+
+pub fn schlick(cosine: f32, ref_idx: f32) -> f32 {
+    let mut r0 = (1.0-ref_idx) / (1.0+ref_idx);
+    r0 = r0 * r0;
+    r0 + (1.0 - r0) * ((1.0 - cosine).powi(5))
 }
