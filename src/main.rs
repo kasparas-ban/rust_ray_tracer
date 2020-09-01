@@ -50,6 +50,7 @@ fn main() {
 
     // World
 
+    let R = (PI/4.0).cos();
     let mut world = HittableList::new();
 
     let material_ground = Box::new(Material::Lambertian {
@@ -62,7 +63,7 @@ fn main() {
         ref_idx: 1.5,
     });
     let material_right = Box::new(Material::Metal {
-        albedo: Color::new(0.8, 0.6, 0.2),
+        albedo: Color::new(1.0, 0.0, 0.0),
         fuzz: 0.0,
     });
 
@@ -78,8 +79,13 @@ fn main() {
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
-        -0.4,
-        material_left,
+        0.5,
+        material_left.clone(),
+    )));
+    world.add(Box::new(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        -0.45,
+        material_left.clone(),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
@@ -89,7 +95,10 @@ fn main() {
 
     // Camera
 
-    let cam: Camera = Camera::new();
+    let cam: Camera = Camera::new(Point3::new(-2.0, 2.0, 1.0),
+                                  Point3::new(0.0, 0.0, -1.0),
+                                  Vec3::new(0.0, 1.0, 0.0),
+                                  20.0, ASPECT_RATIO);
 
     // Render
 
