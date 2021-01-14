@@ -10,6 +10,8 @@ Run `cargo run > image.ppm` to create an output image called `image.ppm`.
 
 Here's one example result:
 
+![Final scene render](https://github.com/kasparas-ban/rust_ray_tracer/blob/master/final_image.png "Final scene render")
+
 ## Running the tests
 
 Tests are run by the usual command `cargo test`.
